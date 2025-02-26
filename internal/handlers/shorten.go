@@ -11,12 +11,12 @@ import (
 )
 
 func ShortenURL(db *gorm.DB) gin.HandlerFunc {
-    return func(c *gin.Context) {
+    return func(ctx *gin.Context) {
         var input struct {
-            OriginalURL string `json:"original_url"`
+            OriginalURL string `json:"url"`
         }
-        if err := c.ShouldBindJSON(&input); err != nil {
-            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+        if err := ctx.ShouldBindJSON(&input); err != nil {
+            ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
             return
         }
 
@@ -24,8 +24,8 @@ func ShortenURL(db *gorm.DB) gin.HandlerFunc {
         shortName := hex.EncodeToString(hash[:])[:8]
 
         var existingURL models.ShortenedURL
-        if err := db.Where("name = ?", shortName).First(&existingURL).Error; err == nil {
-            c.JSON(http.StatusConflict, gin.H{"error": "Short name already exists"})
+        if err := db.Where("short_code = ?", shortName).First(&existingURL).Error; err == nil {
+            ctx.JSON(http.StatusConflict, gin.H{"error": "Short name already exists"})
             return
         }
 
@@ -35,13 +35,13 @@ func ShortenURL(db *gorm.DB) gin.HandlerFunc {
         }
 
         if err := db.Create(&shortenedURL).Error; err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create shortened URL"})
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create shortened URL"})
             return
         }
 
-        c.JSON(http.StatusOK, gin.H{
-            "shortened_url": shortName,
-            "original_url":  input.OriginalURL,
+        ctx.JSON(http.StatusCreated, gin.H{
+            "short_code": shortName,
+            "url":  input.OriginalURL,
         })
     }
 }

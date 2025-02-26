@@ -1,7 +1,6 @@
 package main
 
 import (
-	"textile_flannel/internal/config"
 	"textile_flannel/internal/database"
 	"textile_flannel/internal/handlers"
 
@@ -9,8 +8,6 @@ import (
 )
 
 func main() {
-    cfg := config.LoadConfig()
-
     db := database.InitDB()
 	sqlDb, _ := db.DB()
 
@@ -19,10 +16,11 @@ func main() {
     r := gin.Default()
 
     r.POST("/shorten", handlers.ShortenURL(db))
-    //r.GET("/shorten/:name", internal.RedirectURL(db))
-    //r.PUT("/shorten/:name", internal.UpdateURL(db))
-    //r.DELETE("/shorten/:name", internal.DeleteURL(db))
-    //r.GET("/shorten/:name/stats", internal.GetStats(db))
+    r.GET("/shorten/:name", handlers.ShowURL(db))
+    r.GET("/redirect/:name", handlers.RedirectURL(db))
+    r.PUT("/shorten/:name", handlers.UpdateURL(db))
+    r.DELETE("/shorten/:name", handlers.DeleteURL(db))
+    r.GET("/shorten/:name/stats", handlers.GetStats(db))
 
-    r.Run(cfg.ServerPort)
+    r.Run(":8080")
 }
