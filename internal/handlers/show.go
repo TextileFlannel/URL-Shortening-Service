@@ -20,12 +20,6 @@ func ShowURL(db *gorm.DB) gin.HandlerFunc {
 		data.AccessCount += 1
 		db.Save(&data)
 		
-		ctx.JSON(http.StatusOK, gin.H{
-			"id": data.ID,
-			"url": data.URL,
-			"shortCode": data.ShortCode,
-			"createdAt": data.CreatedAt,
-			"updatedAt": data.UpdatedAt,
-		})
+		ctx.Redirect(http.StatusMovedPermanently, data.URL)
 	}
 }

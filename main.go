@@ -17,7 +17,6 @@ func main() {
 
     r.POST("/shorten", handlers.ShortenURL(db))
     r.GET("/shorten/:name", handlers.ShowURL(db))
-    r.GET("/redirect/:name", handlers.RedirectURL(db))
     r.PUT("/shorten/:name", handlers.UpdateURL(db))
     r.DELETE("/shorten/:name", handlers.DeleteURL(db))
     r.GET("/shorten/:name/stats", handlers.GetStats(db))
